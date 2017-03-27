@@ -1,5 +1,5 @@
-import numpy as np
 #coding=utf-8
+import numpy as np
 class Node(object):
     """节点类"""
     def __init__(self, elem=-1, lchild=None, rchild=None):
@@ -11,7 +11,7 @@ class Tree(object):
     def __init__(self,root=0):
         self.root = root
 
-def huffman_dict(arr):
+def huffman_tree(arr):
     arr = np.sort(arr)
     length = len(arr)
     if length < 1:
@@ -26,6 +26,23 @@ def huffman_dict(arr):
             tree = root
         return tree
 
+def huffman_dict(mytree,i):
+    nodes0 = []
+    codes0 = []
+    if mytree.lchild == None and mytree.rchild == None:
+        nodes0.append([mytree.elem])
+        codes0.append([i])
+    else:
+        nodes0,codes0 = huffman_dict(mytree.lchild,0)
+        nodes1,codes1 = huffman_dict(mytree.rchild,1)
+        nodes0.extend(nodes1)
+        codes0.extend(codes1)
+        for u in range(len(codes0)):
+            codes0[u].insert(0,i)
+    return nodes0,codes0
+
 arr = [1,4,7,11,20]
-huff_tree = huffman_dict(arr)
-print(huff_tree.elem)
+huff_tree = huffman_tree(arr)
+sample,codec = huffman_dict(huff_tree,1)
+print(sample)
+print(codec)
