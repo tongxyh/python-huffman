@@ -16,13 +16,13 @@ def sort_nodes(nodelist):
     if nodelist[0].elem > nodelist[length-1].elem:
         nodelist.insert(0,nodelist[length-1])
         nodelist.pop()
-        print [x.elem for x in nodelist]
+        #print [x.elem for x in nodelist]
         return nodelist
     for i in range(length):
         if i == len(nodelist)-1 or (nodelist[i].elem <= nodelist[length-1].elem and nodelist[i+1].elem > nodelist[length-1].elem):
             nodelist.insert(i,nodelist[length-1])
             nodelist.pop()
-            print [x.elem for x in nodelist]
+        #    print [x.elem for x in nodelist]
             return nodelist
 
 def huffman_tree(arr):
