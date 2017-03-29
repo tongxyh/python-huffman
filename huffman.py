@@ -106,9 +106,9 @@ def huffman_dict(mytree,i):
             codes0[u].insert(0,i)
     return nodes0,codes0
 
-def cal_distrib(arr,numbeg,numend):
+def cal_distrib(arr,begin_n = 0,end_n = 256):
     freq = []
-    for i in range(numbeg,numend+1):
+    for i in range(begin_n,end_n+1):
         freq.append(np.sum(arr == i))
     return freq
 
@@ -117,23 +117,15 @@ def cal_avgbits(arr,codec):
     for i in range(len(arr)):
         a = len(codec[i]) * arr[i] + a
     return a
-inp = [1,2,3,4,5,1,3,4,2,5,1,1,1,4,2,1,3,4,5,2,1,3,4,4,2,2,2,1,4,1,3,1,1,3,1,1,5,1,3,2,1,1,3,4,5,3,4,5,5,3,2,1,3,2,3,2,1,2]
-inp = np.array(inp)
-arr = cal_distrib(inp,1,5)
-arr = arr/np.double(np.sum(arr))
-print(arr)
-arr_list = [x for x in range(1,6)]
 
-huff_tree = huffman_tree(arr,arr_list)
-
-sample0,codec0 = huffman_dict(huff_tree.lchild,1)
-sample1,codec1 = huffman_dict(huff_tree.rchild,0)
-sample0.extend(sample1)
-codec0.extend(codec1)
-sample,codec = sort_bond(sample0,codec0)
-
-print(sample)
-print(codec)
-
-a = cal_avgbits(arr,codec)
-print a
+def dict_huffman(arr,begin_n = 1,end_n = 10):
+    #print(arr)
+    arr_list = [x for x in range(begin_n,end_n+1)]
+    huff_tree = huffman_tree(arr,arr_list)
+    sample0,codec0 = huffman_dict(huff_tree.lchild,1)
+    sample1,codec1 = huffman_dict(huff_tree.rchild,0)
+    sample0.extend(sample1)
+    codec0.extend(codec1)
+    sample,codec = sort_bond(sample0,codec0)
+    avgbits = cal_avgbits(arr,codec)
+    return sample,codec,avgbits
