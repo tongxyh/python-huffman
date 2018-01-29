@@ -139,11 +139,11 @@ def dict(arr,begin_n = 1,end_n = 10):
     dict = {}
     for i in range(len(sample)):
          dict[sample[i]] = codec[i]
-    #    print(sample[i])
+         #print(sample[i])
     return avgbits,dict
 
 def encode(arr,codec,filename):
-    arr = arr.flatten()
+    arr = np.array(arr).flatten()
     bin = ''
     file_object = open(filename + '.deepc', 'wb')
 
@@ -151,16 +151,17 @@ def encode(arr,codec,filename):
     #strb = b'BEG'
     #bytes = struct.pack('3s',strb)
     #file_object.write(bytes)
-    codec_str = []
+    #codec_str = []
+    '''
     for i in codec:
-        #print(i)
+        #print(codec[i])
         cod = ''
         for j in codec[i]:
             cod = cod + str(j)
-        codec_str.append(cod)
-        bytes = struct.pack('ii%ds'%len(codec[i]),i,len(codec[i]),codec_str[i].encode('utf-8'))
+        #codec_str.append(cod)
+        bytes = struct.pack('ii%ds'%len(codec[i]),i,len(codec[i]),cod.encode('utf-8'))
         file_object.write(bytes)
-
+    '''
     for i in arr:
         for j in codec[i]:
             bin = bin + str(j)
@@ -168,5 +169,59 @@ def encode(arr,codec,filename):
 
     file_object.close()
 
-def decode(filename):
-    f = open(filename + '.deepc', 'rb')
+def print_tree(mo_tree):
+    if mo_tree.lchild == None and mo_tree.rchild == None:
+        print(mo_tree.value)
+    else:
+        if mo_tree.lchild != None:
+            print_tree(mo_tree.lchild)
+        if mo_tree.rchild != None:
+            print_tree(mo_tree.rchild)
+
+def decode(arr_size,codec,filename):
+    file_object = open(filename + '.deepc', 'rb')
+    #data = bytes(file_object.read())
+    data= int(file_object.read().encode('hex'),16)
+    #print(codec)
+    bdata = bin(data)
+
+    huff_root = Node()
+    for i in codec:
+        huff_tree = huff_root
+        #print(codec[i])
+        for j in codec[i]:
+            #print(j)
+            if j == 1: #left
+                if huff_tree.lchild == None:
+                    huff_tree.lchild = Node(value = i)
+                huff_tree = huff_tree.lchild
+                #print('1',huff_tree.value)
+            else: #right
+                if huff_tree.rchild == None:
+                    huff_tree.rchild = Node(value = i)
+                huff_tree = huff_tree.rchild
+                #print('0',huff_tree.value)
+
+    #print_tree(huff_root)
+
+    decoded = []
+    d = 0
+    huff_tree = huff_root
+    for i in bdata[2:]:
+        if huff_tree != None:
+            if i == '0':
+                #print(i,huff_tree.value)
+                huff_tree = huff_tree.rchild
+            else:
+                #print(i,huff_tree.value)
+                huff_tree = huff_tree.lchild
+            #print("!!!")
+            if(huff_tree.rchild == None and huff_tree.lchild == None):
+                d = huff_tree.value
+                decoded.append(d)
+                huff_tree = huff_root
+                if(len(decoded) == arr_size):
+                    break
+                #print(i,d)
+
+    return decoded
