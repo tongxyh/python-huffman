@@ -166,11 +166,14 @@ def encode(arr,codec,filename):
         for j in codec[i]:
             bin = bin + str(j)
     #print(len(bin))
+    bytes = struct.pack("i",len(bin))
+    file_object.write(bytes)
+    offset = struct.calcsize('i')
 
     bitstring.Bits(bin=bin).tofile(file_object)
-    offset = np.floor(len(bin))
+
     file_object.close()
-    return offset
+    return len(bin) + offset * 8
 
 def print_tree(mo_tree):
     if mo_tree.lchild == None and mo_tree.rchild == None:
@@ -184,7 +187,7 @@ def print_tree(mo_tree):
 def decode(arr_size,codec,file_object):
     #file_object = open(filename + '.deepc', 'rb')
 
-    data= int(file_object.read().encode('hex'),16)
+    data= int(file_object.read(int(np.ceil(arr_size/8.0))).encode('hex'),16)
     bdata = bin(data)
     #print('binary data: ',bdata)
     print 'binary data: ',bdata
@@ -208,7 +211,7 @@ def decode(arr_size,codec,file_object):
     decoded = []
     d = 0
     huff_tree = huff_root
-    for i in bdata[2:]:
+    for i in bdata[2:2+arr_size]:
         if huff_tree != None:
             if i == '0':
                 #print(i,huff_tree.value)
@@ -220,9 +223,9 @@ def decode(arr_size,codec,file_object):
                 d = huff_tree.value
                 decoded.append(d)
                 huff_tree = huff_root
-                if(len(decoded) == arr_size):
+                #if(len(decoded) == arr_size):
                     #print(len(decoded))
-                    break
+                #    break
                 #print(i,d)
 
     return decoded

@@ -4,11 +4,11 @@ import huffman
 import bitstring
 import struct
 
-def write_head(l,codec,filename):
+def write_head(codec,filename):
     file_object = open(filename + '.deepc', 'wb')
-    bytes = struct.pack('i',len(codec))
+
+    bytes = struct.pack('i',len(codec))     #  codec NUM
     offset = struct.calcsize('i')
-    #print(offset)
     file_object.write(bytes)
 
     for i in codec:
@@ -22,9 +22,6 @@ def write_head(l,codec,filename):
         #bytes = struct.pack("ii",1,2)
         #print struct.unpack("ii", bytes)
         file_object.write(bytes)
-
-    bytes = struct.pack("i",l)
-    file_object.write(bytes)
 
     offset = struct.calcsize('i') + offset
     #print('bits:',offset)
@@ -57,8 +54,9 @@ distri = [0.1,0.2,0.3,0.4]
 avgbits,codec = huffman.dict(distri,1,10)
 
 #write
-sizehead = write_head(len(arr),codec,'test')
+sizehead = write_head(codec,'test')
 sizearr = huffman.encode(arr,codec,'test')
+sizearr = int(np.ceil(sizearr/8.0)*8)
 #print('head:',sizehead,'bytes')
 #print('arr:',sizearr,'bytes')
 #print('file sum:',sizehead + sizearr,'bytes / ',(sizehead + sizearr)/8,'bits')
