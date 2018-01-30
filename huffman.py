@@ -145,7 +145,7 @@ def dict(arr,begin_n = 1,end_n = 10):
 def encode(arr,codec,filename):
     arr = np.array(arr).flatten()
     bin = ''
-    file_object = open(filename + '.deepc', 'ab')
+    file_object = open(filename, 'ab')
 
     #deal with codec
     #strb = b'BEG'
