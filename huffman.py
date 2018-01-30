@@ -142,10 +142,9 @@ def dict(arr,begin_n = 1,end_n = 10):
          #print(sample[i])
     return avgbits,dict
 
-def encode(arr,codec,filename):
+def encode(arr,codec,file_object):
     arr = np.array(arr).flatten()
     bin = ''
-    file_object = open(filename, 'ab')
 
     #deal with codec
     #strb = b'BEG'
@@ -171,8 +170,6 @@ def encode(arr,codec,filename):
     offset = struct.calcsize('i')
 
     bitstring.Bits(bin=bin).tofile(file_object)
-
-    file_object.close()
     return len(bin) + offset * 8
 
 def print_tree(mo_tree):
@@ -190,7 +187,7 @@ def decode(arr_size,codec,file_object):
     data= int(file_object.read(int(np.ceil(arr_size/8.0))).encode('hex'),16)
     bdata = bin(data)
     #print('binary data: ',bdata)
-    print 'binary data: ',bdata
+    #print 'binary data: ',bdata
     huff_root = Node()
     for i in codec:
         huff_tree = huff_root
