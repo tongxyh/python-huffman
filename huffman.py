@@ -144,7 +144,7 @@ def dict(arr,begin_n = 1,end_n = 10):
 
 def encode(arr,codec,file_object):
     arr = np.array(arr).flatten()
-    bin = ''
+    bin = '11111111'
 
     #deal with codec
     #strb = b'BEG'
@@ -169,6 +169,8 @@ def encode(arr,codec,file_object):
     file_object.write(bytes)
     offset = struct.calcsize('i')
 
+    #print bin
+
     bitstring.Bits(bin=bin).tofile(file_object)
     return len(bin) + offset * 8
 
@@ -188,6 +190,7 @@ def decode(arr_size,codec,file_object):
     bdata = bin(data)
     #print('binary data: ',bdata)
     #print 'binary data: ',bdata
+
     huff_root = Node()
     for i in codec:
         huff_tree = huff_root
@@ -208,7 +211,7 @@ def decode(arr_size,codec,file_object):
     decoded = []
     d = 0
     huff_tree = huff_root
-    for i in bdata[2:2+arr_size]:
+    for i in bdata[10:2+arr_size]: #??
         if huff_tree != None:
             if i == '0':
                 #print(i,huff_tree.value)

@@ -4,8 +4,8 @@ import huffman
 import bitstring
 import struct
 
-def write_head(codec,filename):
-    file_object = open(filename + '.deepc', 'wb')
+def write_head(codec,f):
+    file_object = f
 
     bytes = struct.pack('i',len(codec))     #  codec NUM
     offset = struct.calcsize('i')
@@ -25,7 +25,7 @@ def write_head(codec,filename):
 
     offset = struct.calcsize('i') + offset
     #print('bits:',offset)
-    file_object.close()
+    #file_object.close()
     return offset*8
 
 def read_head(file_object):
@@ -48,28 +48,55 @@ def read_head(file_object):
     #file_object.close()
     return lens_arr
 
-arr = [1,2,1,2,4,4,3,2,4,4,2,3,3,3,3,3,4,4,4,4]
+#arr = [1,2,1,2,4,4,3,2,4,4,2,3,3,3,3,3,4,4,4,4]
+#distri = [0.1,0.2,0.3,0.4]
 
-distri = [0.1,0.2,0.3,0.4]
-avgbits,codec = huffman.dict(distri,1,10)
+np.random.seed()
+cnt = 0
+for _ in range(1000):
 
-#write
-sizehead = write_head(codec,'test')
-sizearr = huffman.encode(arr,codec,'test')
-sizearr = int(np.ceil(sizearr/8.0)*8)
-#print('head:',sizehead,'bytes')
-#print('arr:',sizearr,'bytes')
-#print('file sum:',sizehead + sizearr,'bytes / ',(sizehead + sizearr)/8,'bits')
-print 'head:',sizehead,'bytes'
-print 'arr:',sizearr,'bytes'
-print 'file sum:',sizehead + sizearr,'bytes /',(sizehead + sizearr)/8,'bits'
+    arr = np.random.randint(1,6,[20])
+    distri = [0.2,0.2,0.2,0.2,0.2]
 
-#read
-file_object = open('test.deepc', 'rb')
-lens_arr = read_head(file_object)
-#print(lens_arr)
-decoded = huffman.decode(lens_arr,codec,file_object)
-file_object.close()
+    avgbits,codec = huffman.dict(distri,1,5)
 
-#print("decoded: ",decoded)
-print"decoded data: ",decoded
+    #write
+    f = open('test.dat', 'wb')
+    sizehead = write_head(codec,f)
+    sizearr = huffman.encode(arr,codec,f)
+    sizearr = int(np.ceil(sizearr/8.0)*8)
+    f.close()
+    #print('head:',sizehead,'bytes')
+    #print('arr:',sizearr,'bytes')
+    #print('file sum:',sizehead + sizearr,'bytes / ',(sizehead + sizearr)/8,'bits')
+    #print 'head:',sizehead,'bits'
+    #print 'arr:',sizearr,'bits'
+    #print 'file sum:',sizehead + sizearr,'bits /',(sizehead + sizearr)/8,'bytes'
+
+    #read
+    file_object = open('test.dat', 'rb')
+    lens_arr = read_head(file_object)
+    #print(lens_arr)
+    decoded = huffman.decode(lens_arr,codec,file_object)
+    file_object.close()
+
+    #print("decoded: ",decoded)
+    #print "original data: ",arr
+    #print "decoded data: ",decoded
+    def list_compare(a,b):
+        if len(a) == len(b):
+            _flag = (a == b)
+            for i in _flag:
+                if i == False:
+                    #print "FAIL"
+                    return False
+            #print "SUCCESS"
+            return True
+        else:
+            #print "FAIL"
+            return False
+    r = list_compare(arr,decoded)
+    if r == True:
+        cnt += 1
+
+print "TEST PASSED {}/{}".format(cnt,1000)
